@@ -28,6 +28,7 @@ async def read_item(skip: Optional[int] = None, limit: Optional[int]= None):
     return fake_items_db[skip: skip + limit]
 
 
+#Pydantic Model for request body validation
 class Item(BaseModel):
     name: str
     description: str | None = None
@@ -35,6 +36,7 @@ class Item(BaseModel):
     tax: float | None = None
 
 
+# path parameter, request body and query parameters in FastAPI.
 @app.put("/items/{item_id}")
 async def update_item(item_id: int, item: Item, q: str | None = None):
     result = {"item_id": item_id, **item.model_dump()}
@@ -43,10 +45,11 @@ async def update_item(item_id: int, item: Item, q: str | None = None):
     return result
 
 
-# additional validation
+# additional validation using Query with Annotated.
 @app.get("/products/")
 async def read_items(q: Annotated[str | None, Query(max_length=50)] = None):
     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
     if q:
         results.update({"q": q})
     return results
+
